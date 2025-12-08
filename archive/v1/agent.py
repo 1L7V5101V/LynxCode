@@ -2,7 +2,11 @@
 import os
 import openai
 
-openai.api_key = os.getenv("OPENAI_API_KEY")
+API_KEY = os.getenv("OPENAI_API_KEY") or os.getenv("OPENAI_API_TOKEN")
+if not API_KEY:
+    raise RuntimeError("需要设置 OPENAI_API_KEY")
+
+openai.api_key = API_KEY
 
 def ask(prompt):
     resp = openai.ChatCompletion.create(

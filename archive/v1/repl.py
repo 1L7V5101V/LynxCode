@@ -1,6 +1,7 @@
-"""简陋的交互式 REPL 循环。"""
+"""简陋的交互式 REPL 循环（加历史记录）。"""
 import sys
 from engine import ask
+from history import record
 
 def main():
     print("Nova v0.0.1 — 简陋 REPL (exit 退出)")
@@ -14,8 +15,11 @@ def main():
             break
         if not prompt.strip():
             continue
+        record("user", prompt)
         print()
-        print(ask(prompt))
+        answer = ask(prompt)
+        record("assistant", answer)
+        print(answer)
 
 if __name__ == "__main__":
     main()

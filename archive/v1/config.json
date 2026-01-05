@@ -1,6 +1,15 @@
 {
-    "model": "gpt-4",
-    "temperature": 0.7,
-    "max_tokens": 2048,
-    "provider": "openai"
+    "default_provider": "openai",
+    "providers": {
+        "openai": {
+            "model": "gpt-4",
+            "temperature": 0.7,
+            "max_tokens": 2048
+        },
+        "anthropic": {
+            "model": "claude-3-opus-20240229",
+            "temperature": 0.5,
+            "max_tokens": 4096
+        }
+    }
 }

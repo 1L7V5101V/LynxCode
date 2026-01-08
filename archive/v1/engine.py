@@ -1,5 +1,5 @@
-"""核心引擎：带简陋 tool calling。"""
-import json
+"""核心引擎：tool calling 解析改进。"""
+import re
 import sys
 import os
 sys.path.insert(0, os.path.dirname(__file__))
@@ -19,22 +19,21 @@ TOOL: run_shell("ls -la")
 工具结果会在下一轮消息中返回给你。
 """
 
+TOOL_PATTERN = re.compile(r'TOOL:\s*(\w+)\(["\'](.*?)["\']\)', re.DOTALL)
+
+def _execute_tool(tool_name, arg):
+    if tool_name == "read_file":
+        return read_file(arg)
+    elif tool_name == "run_shell":
+        return run_shell(arg)
+    return f"未知工具: {tool_name}"
+
 def ask(prompt):
     full_prompt = TOOL_DESCRIPTIONS + "\n\n用户: " + prompt
     response = _provider_ask(full_prompt)
-
-    if response.startswith("TOOL:"):
-        tool_line = response[len("TOOL:"):].strip()
-        try:
-            if tool_line.startswith("read_file"):
-                path = tool_line.split('"')[1]
-                result = read_file(path)
-                return _provider_ask(full_prompt + "\n\n工具结果:\n" + result)
-            elif tool_line.startswith("run_shell"):
-                cmd = tool_line.split('"')[1]
-                result = run_shell(cmd)
-                return _provider_ask(full_prompt + "\n\n工具结果:\n" + result)
-        except Exception as e:
-            return f"工具调用失败: {e}"
-
+    match = TOOL_PATTERN.search(response)
+    if match:
+        tool_name, arg = match.groups()
+        result = _execute_tool(tool_name, arg)
+        return _provider_ask(full_prompt + "\n\n工具结果:\n" + result)
     return response

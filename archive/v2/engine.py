@@ -1,28 +1,25 @@
-"""v2 重构：把 provider 调用抽成独立模块。"""
+"""v2 引擎——重新设计，明确单向依赖。"""
 import sys
 import os
 sys.path.insert(0, os.path.dirname(__file__))
+from providers.base import get_provider
+from tools.registry import Registry
 
-# HACK: v1 engine needs v2's context, v2 needs v1's tools — 循环依赖先这么绕开
-import importlib
+class Engine:
+    def __init__(self, provider_name="openai"):
+        self.provider = get_provider(provider_name)
+        self.tools = Registry()
+        self.history = []
 
-engine_context = {}
-tool_registry = None
+    def ask(self, prompt):
+        self.history.append({"role": "user", "content": prompt})
+        response = self.provider.complete(self._build_prompt())
+        tool_result = self.tools.try_dispatch(response)
+        if tool_result:
+            self.history.append({"role": "assistant", "content": f"[tool: {tool_result}]"})
+            response = self.provider.complete(self._build_prompt())
+        self.history.append({"role": "assistant", "content": response})
+        return response
 
-def _get_tool_registry():
-    global tool_registry
-    if tool_registry is None:
-        from tools.registry import ToolRegistry
-        tool_registry = ToolRegistry()
-    return tool_registry
-
-def ask(prompt, provider_name="openai"):
-    ProviderClient = importlib.import_module("providers.base").ProviderClient
-    client = ProviderClient.get(provider_name)
-    response = client.complete(prompt)
-    tr = _get_tool_registry()
-    tool_call = tr.parse_response(response)
-    if tool_call:
-        result = tr.execute(tool_call)
-        response = client.complete(prompt + "\n\n" + result)
-    return response
+    def _build_prompt(self):
+        return "\n".join(f"{m['role']}: {m['content']}" for m in self.history[-10:])

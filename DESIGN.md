@@ -61,3 +61,8 @@ class Engine:
          → 记录到 SessionStore
          → 返回给用户
 ```
+
+## 状态
+
+设计已定，准备搭脚手架开始实现。v1/v2 原型已归档到 archive/。
+下一步：建 pyproject.toml、install.sh、.gitignore，正式启动项目。

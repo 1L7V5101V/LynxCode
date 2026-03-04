@@ -57,7 +57,3 @@ docs/**
 
 # Packaging metadata
 nova.egg-info/
-
-# temp
-*.swp
-*.swo

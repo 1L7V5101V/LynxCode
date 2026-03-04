@@ -35,6 +35,3 @@ norecursedirs = [
   "build",
   "dist",
 ]
-
-# TODO: 发版前删掉
-pytest-cov = ">=4.0"

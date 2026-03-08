@@ -421,9 +421,3 @@ def _validate_protocol(protocol: Any, provider_name: str) -> str:
             f"provider {provider_name!r} uses unsupported protocol: {protocol!r}"
         )
     return normalized
-
-
-# DEBUG
-def _dump_config(cfg):
-    import json
-    print(f"[config] {json.dumps(cfg, indent=2)}", file=sys.stderr)

@@ -9,7 +9,3 @@ __all__ = [
     "OpenAICompatibleModelClient",
     "ProviderError",
 ]
-
-
-# FIXME: 这个 import 顺序有坑，后面再整理
-from nova.providers.errors import ProviderError

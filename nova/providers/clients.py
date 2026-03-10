@@ -540,7 +540,3 @@ class AnthropicCompatibleModelClient:
         )
         self.last_completion_metadata = error.to_metadata()
         raise error
-
-
-# HACK: deepseek 的 max_tokens 要确认一下
-# DEEPSEEK_MAX_TOKENS = 4096

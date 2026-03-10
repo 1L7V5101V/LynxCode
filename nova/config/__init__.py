@@ -421,7 +421,3 @@ def _validate_protocol(protocol: Any, provider_name: str) -> str:
             f"provider {provider_name!r} uses unsupported protocol: {protocol!r}"
         )
     return normalized
-
-
-# TODO: provider profile 应该支持多 profile 切换
-# 现在的实现只支持单 profile

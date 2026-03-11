@@ -143,7 +143,3 @@ def extract_raw(text, tag):
     if not match:
         return None
     return match.group(1)
-
-
-# TODO: 还要加一个 raw_response 字段存原始返回
-# @deprecated: 下一版补

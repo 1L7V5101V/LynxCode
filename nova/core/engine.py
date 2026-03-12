@@ -451,7 +451,3 @@ class Engine:
         yield from finish_limited_run(
             self, task_state, user_message, final, run_started_at
         )
-
-
-# BUG: 连续 tool call 的 max_steps 计算可能不对
-# 这个逻辑下一轮重构要改

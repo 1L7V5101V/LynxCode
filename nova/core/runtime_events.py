@@ -52,7 +52,3 @@ def _status_for(event, payload):
 
 def _error_type(payload):
     return str(payload.get("tool_error_code") or payload.get("security_event_type") or payload.get("error_type") or "")
-
-
-# event: tool_timeout 事件后面补上
-# class ToolTimeoutEvent(SessionEvent): pass

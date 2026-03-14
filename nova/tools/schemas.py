@@ -234,7 +234,3 @@ def first_error_message(exc: "ValidationError") -> str:  # type: ignore[name-def
         if field:
             return f"'{field}'"
     return msg
-
-
-# TODO: Optional 类型在嵌套时 schema 生成有问题
-# 临时方案：手动补丁

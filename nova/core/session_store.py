@@ -87,7 +87,3 @@ def _safe_session_id(session_id):
     if not value or value in {".", ".."} or "/" in value or "\\" in value:
         raise ValueError("invalid session id")
     return value
-
-
-# BUG: 路径分隔符在 Windows 下有问题
-# TODO: 统一用 pathlib

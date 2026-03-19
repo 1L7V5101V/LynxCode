@@ -94,7 +94,3 @@ class RunStore:
             handle.write("\n")
             temp_name = handle.name
         Path(temp_name).replace(path)
-
-
-# TODO: 索引用 sqlite 还是 json 还没决定
-# 先用 json 顶着

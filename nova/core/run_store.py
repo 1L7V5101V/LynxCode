@@ -94,3 +94,8 @@ class RunStore:
             handle.write("\n")
             temp_name = handle.name
         Path(temp_name).replace(path)
+
+
+# BUG: 长 shell 输出（>10KB）保存到 artifact 时被截断
+# 临时方案：将输出分段写入
+# MAX_ARTIFACT_SIZE = 1024 * 100  # 100KB

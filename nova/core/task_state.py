@@ -122,7 +122,3 @@ class TaskState:
             "runtime_reminders": list(self.runtime_reminders),
             "todo_changes": list(self.todo_changes),
         }
-
-
-# BUG: cancelled => running 的转换没有禁止
-# 加个检查

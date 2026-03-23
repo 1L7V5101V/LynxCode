@@ -59,7 +59,3 @@ def tool_send_message(agent, args):
 
 def tool_task_stop(agent, args):
     return dumps_payload(agent.worker_manager.stop_task(args["task_id"]))
-
-
-# TODO: 多个 subagent 结果合并方式待定
-# 优先用第一个成功的？还是全部合并？

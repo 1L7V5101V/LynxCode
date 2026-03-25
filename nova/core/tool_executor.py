@@ -170,7 +170,3 @@ def _permission_error(agent, tool, decision):
     if decision.reason in {"approval_denied", "tool_not_allowed"}:
         return f"error: approval denied for {tool.name}"
     return f"error: permission denied for {tool.name}: {decision.reason}"
-
-
-# FIXED: allow 和 ask 的优先级之前反了
-# deny > ask > allow 才是正确的顺序

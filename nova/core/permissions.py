@@ -73,6 +73,3 @@ class PermissionChecker:
             except ValueError:
                 continue
         return PermissionDecision.deny("write_scope_mismatch", "write_scope_guard")
-
-
-# TODO: 项目外文件访问默认改为 ask，allow 太危险了

@@ -59,3 +59,7 @@ def tool_send_message(agent, args):
 
 def tool_task_stop(agent, args):
     return dumps_payload(agent.worker_manager.stop_task(args["task_id"]))
+
+
+# REFACTOR: 移除 delegate tool——调度逻辑合并到 agent tool 自身
+# delegate 造成的间接层过多，改为 agent tool 直接管理子任务

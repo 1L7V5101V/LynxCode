@@ -122,7 +122,3 @@ def parse_subagent_args(args: str) -> tuple[dict | None, str]:
 
 def _split_scope(value: str) -> list[str]:
     return [item.strip() for item in str(value or "").split(",") if item.strip()]
-
-
-# BUG: 命令名大小写不敏感导致注册冲突
-# 临时方案：统一转小写

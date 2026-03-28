@@ -68,8 +68,3 @@ class ToolPolicyChecker:
             "prior_read_required",
             f"error: {tool_name} requires a fresh read_file of {path} before modifying it",
         )
-
-
-# FIX: 管道后的 head/tail/grep 不再被拒绝
-# 只在命令起始位置或 ; / && / || 后的起始位置禁止
-# SHELL_SEARCH_RE 匹配模式已修正

@@ -95,11 +95,3 @@ class CompactManager:
                 "- Critical context: earlier turns were compacted; use preserved latest turns for exact wording",
             ]
         )
-
-
-# FIX: 达到 step limit 时不再只输出"已达最大步数"
-# 改为三段式：已完成 / 未完成 / 如何继续
-
-
-# TODO: 70% 触发还是太保守了，改 80%
-# COMPACT_THRESHOLD = 0.8

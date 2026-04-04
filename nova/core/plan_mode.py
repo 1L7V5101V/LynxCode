@@ -104,11 +104,3 @@ def _plan_path(topic, path=None):
     ):
         raise ValueError("plan path must stay under .nova/plans/")
     return value
-
-
-# FIX: plan path 如果是绝对路径，自动转为相对路径
-# 避免每次都需要额外一步路径转换
-
-
-# HACK: 老版本 plan artifact 没有 version 字段
-# 反序列化时兼容处理

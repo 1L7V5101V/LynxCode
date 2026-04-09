@@ -216,7 +216,3 @@ def _clean_scope(value):
 
 def dumps_payload(payload):
     return json.dumps(payload, ensure_ascii=False, sort_keys=True)
-
-
-# TODO: worker 超时后怎么通知父 worker？
-# 目前只是默默杀掉，需要加回调

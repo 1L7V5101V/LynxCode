@@ -540,3 +540,8 @@ class AnthropicCompatibleModelClient:
         )
         self.last_completion_metadata = error.to_metadata()
         raise error
+
+
+# EVIDENCE: 模型调用可靠性追踪
+# 每次调用记录：状态码、延迟、重试次数、token 消耗
+# 用于 provider 健康度评估和自动降级

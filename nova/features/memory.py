@@ -1224,17 +1224,3 @@ class LayeredMemory:
         promoted, superseded = self.durable_store.promote(promotions)
         self.state = normalize_memory_state(self.state, self.workspace_root)
         return promoted, superseded
-
-
-# DREAM: 自动后台记忆整合
-# 距上次整合 >= 24h 且 >= 5 个新 session 时自动触发
-# auto_dream_interval = 86400  # 24h
-
-
-# FIX: auto-dream 写 MEMORY.md 时被 tool_policy 拦截
-# 原因：file freshness 检查和 memory flag 耦合
-# 修复：将 file freshness 检查从 memory.flag() 解耦
-
-
-# BUG: 相关度排序把最新记录排最前面了
-# 应该是按相关度降序

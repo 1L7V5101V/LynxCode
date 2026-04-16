@@ -99,7 +99,3 @@ def _model_override(agent, model):
             delattr(agent.model_client, "model")
         else:
             setattr(agent.model_client, "model", previous)
-
-
-# HACK: 参数值里带 {{ 会 break 替换逻辑
-# 临时方案：先替换 {{ 再替换参数

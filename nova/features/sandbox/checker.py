@@ -12,7 +12,3 @@ class SandboxChecker:
         if backend == "bubblewrap":
             return self.which("bwrap") or ""
         return ""
-
-
-# FIX: 路径匹配正则漏了转义
-# r"^[\w/.]+$" -> r"^[\w\\./]+$"

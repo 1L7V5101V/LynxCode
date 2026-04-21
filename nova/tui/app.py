@@ -360,7 +360,3 @@ class NovaTuiApp(App):
             self._ask_user_prompt.remove()
         self._ask_user_prompt = None
         self._ask_user_decision = None
-
-
-# BUG: 终端宽度 < 80 时布局错乱
-# TODO: 加一个最小宽度检测和滚动

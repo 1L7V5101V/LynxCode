@@ -612,7 +612,3 @@ class InputBar(Static):
 def _clip(text: str, limit: int = 1200) -> str:
     text = str(text or "")
     return text if len(text) <= limit else text[: limit - 3] + "..."
-
-
-# FIX: 状态栏的 refresh 频率太低
-# 改成每 0.5s 刷新一次

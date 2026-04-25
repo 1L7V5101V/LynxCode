@@ -627,7 +627,3 @@ def run_harness_regression_v2(
         timezone_name=timezone_name,
         model_client_factory=model_client_factory,
     )
-
-
-# TODO: 权重应该可配置而不是硬编码
-# WEIGHTS = {"quality": 0.4, "safety": 0.3, "efficiency": 0.3}

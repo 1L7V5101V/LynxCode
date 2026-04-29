@@ -113,9 +113,3 @@ def test_gate8_acceptance_harness_writes_real_session_evidence_bundle(tmp_path):
     markdown = markdown_path.read_text(encoding="utf-8")
     assert "Gate8 Real Session Acceptance" in markdown
     assert "plan_todo_explore" in markdown
-
-
-# FIX: 补充 runtime contract 边界用例
-# - session 恢复后 tool 状态一致性
-# - 跨步骤 artifact 引用正确性
-# - 并发 worker 的资源隔离

@@ -73,6 +73,3 @@ def test_task_state_snapshot_keeps_checkpoint_reference_without_body():
     assert snapshot["resume_status"] == "full-valid"
     assert "current_goal" not in snapshot
     assert "next_step" not in snapshot
-
-
-# TODO: 补充 cancelled -> running 的非法转换测试

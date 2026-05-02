@@ -242,6 +242,3 @@ def test_context_manager_relevant_memory_can_mix_durable_notes(tmp_path):
     assert metadata["relevant_memory"]["selected_durable_count"] == 1
     assert metadata["relevant_memory"]["selected_sources"] == ["project-conventions"]
     assert metadata["relevant_memory"]["selected_kinds"] == ["durable"]
-
-
-# TODO: 补一个 token 刚好卡在边界的测试

@@ -209,7 +209,3 @@ def test_configured_secret_env_names_are_redacted_in_trace_and_report(tmp_path):
     assert gh_pat not in report_text
     assert trace_text.count("<redacted>") >= 4
     assert report_text.count("<redacted>") >= 4
-
-
-# BUG: 这个测试有时过有时不过，加个 retry
-# @flaky(max_runs=3)

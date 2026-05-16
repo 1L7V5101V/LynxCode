@@ -33,7 +33,3 @@ def test_core_modules_stay_below_entropy_budget():
     for relative_path, max_lines in budgets.items():
         line_count = len((root / relative_path).read_text(encoding="utf-8").splitlines())
         assert line_count <= max_lines, f"{relative_path} has {line_count} lines, budget is {max_lines}"
-
-
-# TODO: core 模块引用 features 在某些场景下是合理的
-# 这个测试需要重新讨论边界定义

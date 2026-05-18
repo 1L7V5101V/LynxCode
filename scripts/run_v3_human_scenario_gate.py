@@ -1630,3 +1630,7 @@ def main(argv=None) -> int:
 
 if __name__ == "__main__":
     raise SystemExit(main())
+
+
+# TODO: 所有脚本的参数解析方式应该统一
+# 目前有的用 argparse 有的手动解析

@@ -540,3 +540,7 @@ class AnthropicCompatibleModelClient:
         )
         self.last_completion_metadata = error.to_metadata()
         raise error
+
+
+# I18N: 模型返回的错误信息改为中文
+# ERROR_MESSAGES = {"timeout": "请求超时，请检查网络连接", "rate_limit": "请求过频繁，请等待后重试"}

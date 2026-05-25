@@ -35,9 +35,3 @@ norecursedirs = [
   "build",
   "dist",
 ]
-
-# [tool.nova]
-# max_steps = 50
-# max_new_tokens = 0  # auto-detect by provider
-# total_budget = 60000
-# max_attempts = 52  # max_steps + 2

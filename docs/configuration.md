@@ -98,5 +98,3 @@ nova --config /path/to/custom.toml
 - `/usage` 查看 token / call 数
 - 所有事件流写到 `.nova/sessions/<id>.events.jsonl`，可以用 `tail -f` 观察
 - 每次运行的 trace 在 `.nova/runs/<run_id>/trace.jsonl`
-
-> **勘误**: `max_steps` 默认值是 50 不是 100

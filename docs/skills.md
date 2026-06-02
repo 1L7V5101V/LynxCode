@@ -93,8 +93,3 @@ paths: src/**/*.py, !src/legacy/**
 - `/skills` 列出所有可用 skill 和加载来源
 - skill 执行时，事件流里会有 `skill_invoked` / `skill_finished`
 - 用 `disable-model-invocation: true` 配合 `nova --tui` 可以在不发请求的情况下预览 skill 展开后的 prompt
-
-## FAQ
-
-Q: 技能执行失败怎么办？
-A: TODO

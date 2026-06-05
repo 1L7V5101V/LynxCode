@@ -50,6 +50,3 @@
 - v3 human scenario suite (`abf9c4f`)
 - Release smoke tests（离线 4 个 + 可选 live dream）
 - 27 个测试文件覆盖所有子系统
-
-- TODO: auto-dream 文件写入被 tool_policy 拒绝
-- TODO: shell 管道命令误判

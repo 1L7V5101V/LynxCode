@@ -7,7 +7,11 @@ from pathlib import Path
 from ..config import resolve_provider_config
 from .evaluator import run_fixed_benchmark
 from ..testing import ScriptedModelClient
-from ..providers import AnthropicCompatibleModelClient, OpenAICompatibleModelClient
+from ..providers import (
+    AnthropicCompatibleModelClient,
+    OpenAIChatCompletionsModelClient,
+    OpenAICompatibleModelClient,
+)
 from ..core.runtime import Nova, SessionStore
 from ..core.workspace import WorkspaceContext
 
@@ -695,6 +699,7 @@ def _provider_profile(provider):
         "model": config.model,
         "base_url": config.base_url,
         "api_key": config.api_key,
+        "api_style": config.api_style,
     }
 
 
@@ -704,6 +709,14 @@ def _make_provider_client(provider):
         raise RuntimeError(profile["reason"])
     timeout = 60
     if profile["protocol"] == "openai":
+        if profile.get("api_style") == "chat":
+            return OpenAIChatCompletionsModelClient(
+                model=profile["model"],
+                base_url=profile["base_url"],
+                api_key=profile["api_key"],
+                temperature=0.0,
+                timeout=timeout,
+            )
         return OpenAICompatibleModelClient(
             model=profile["model"],
             base_url=profile["base_url"],
@@ -740,6 +753,14 @@ def run_provider_experiments(benchmark_path, workspace_root, artifact_root, max_
         if provider_name == "gpt":
             def factory(task, workspace, profile=profile):
                 del task, workspace
+                if profile.get("api_style") == "chat":
+                    return OpenAIChatCompletionsModelClient(
+                        model=profile["model"],
+                        base_url=profile["base_url"],
+                        api_key=profile["api_key"],
+                        temperature=0.0,
+                        timeout=300,
+                    )
                 return OpenAICompatibleModelClient(
                     model=profile["model"],
                     base_url=profile["base_url"],

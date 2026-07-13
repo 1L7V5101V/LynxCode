@@ -28,6 +28,7 @@ class ProviderConfig:
     api_key: str
     base_url: str
     model: str
+    api_style: str = "responses"
 
 
 PROVIDER_DEFAULTS: dict[str, dict[str, str]] = {
@@ -262,12 +263,17 @@ def resolve_provider_config(
         "",
     )
 
+    resolved_api_style = profile_values.get("api_style", "responses")
+    if resolved_api_style not in ("responses", "chat"):
+        resolved_api_style = "responses"
+
     return ProviderConfig(
         name=provider_name,
         protocol=protocol,
         api_key=str(resolved_api_key or ""),
         base_url=str(resolved_base_url or ""),
         model=str(resolved_model or ""),
+        api_style=resolved_api_style,
     )
 
 

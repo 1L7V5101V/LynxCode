@@ -24,7 +24,11 @@ from .config import (
 )
 from .features import skills as skillslib
 from .features.skills_runtime import invoke_skill
-from .providers import AnthropicCompatibleModelClient, OpenAICompatibleModelClient
+from .providers import (
+    AnthropicCompatibleModelClient,
+    OpenAIChatCompletionsModelClient,
+    OpenAICompatibleModelClient,
+)
 from .core.runtime import Nova, SessionStore
 from .core.workspace import WorkspaceContext, middle
 
@@ -92,7 +96,16 @@ def _build_model_client(args):
     )
     # CLI 只负责把 provider profile 翻译成具体协议 client。
     # 例如 deepseek 是 profile，protocol=anthropic 才决定走 Messages API。
+    # protocol=openai 时，api_style 决定是 Responses API 还是 Chat Completions API。
     if config.protocol == "openai":
+        if config.api_style == "chat":
+            return OpenAIChatCompletionsModelClient(
+                model=config.model,
+                base_url=config.base_url,
+                api_key=config.api_key,
+                temperature=args.temperature,
+                timeout=getattr(args, "openai_timeout", 300),
+            )
         return OpenAICompatibleModelClient(
             model=config.model,
             base_url=config.base_url,

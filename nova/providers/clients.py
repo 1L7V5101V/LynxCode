@@ -434,6 +434,118 @@ class OpenAICompatibleModelClient:
         raise error
 
 
+class OpenAIChatCompletionsModelClient:
+    """OpenAI-compatible Chat Completions API client (`/v1/chat/completions`)。
+
+    与 `OpenAICompatibleModelClient`（Responses API）的区别：
+    - 请求体用 `messages` 数组和 `max_tokens`，而非 `input` / `max_output_tokens`
+    - endpoint 是 `/chat/completions` 而非 `/responses`
+    - 不依赖 SSE / prompt cache 特性
+
+    为什么存在：
+    很多兼容后端（如 DeepSeek 原生 API、opencode go）只支持 Chat Completions API，
+    NovaCode 默认的 Responses API 在这些后端上不可用。
+    """
+
+    def __init__(self, model, base_url, api_key, temperature, timeout):
+        self.model = model
+        self.base_url = _normalize_versioned_base_url(base_url)
+        self.api_key = api_key
+        self.temperature = temperature
+        self.timeout = timeout
+        self.last_completion_metadata = {}
+
+    def complete(self, prompt, max_new_tokens, **kwargs):
+        """向 OpenAI-compatible `/chat/completions` 接口发起一次模型调用。"""
+        del kwargs  # Chat Completions 不需要 prompt_cache 等参数
+        self.last_completion_metadata = {}
+        payload = {
+            "model": self.model,
+            "messages": [
+                {
+                    "role": "user",
+                    "content": prompt,
+                }
+            ],
+            "max_tokens": max_new_tokens,
+            "stream": False,
+        }
+        if self.temperature is not None:
+            payload["temperature"] = self.temperature
+
+        headers = {
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": OPENAI_COMPATIBLE_USER_AGENT,
+        }
+        if self.api_key:
+            headers["Authorization"] = f"Bearer {self.api_key}"
+
+        request = urllib.request.Request(
+            self.base_url + "/chat/completions",
+            data=json.dumps(payload).encode("utf-8"),
+            headers=headers,
+            method="POST",
+        )
+        try:
+            body_text, content_type, request_metadata = _request_with_retries(
+                "openai",
+                self.model,
+                self.base_url,
+                request,
+                self.timeout,
+            )
+        except ProviderError as exc:
+            self.last_completion_metadata = exc.to_metadata()
+            raise
+
+        try:
+            data = json.loads(body_text)
+        except json.JSONDecodeError as exc:
+            error = _provider_failure(
+                "openai",
+                self.model,
+                self.base_url,
+                "invalid_json",
+                "Chat Completions error: backend returned non-JSON content",
+                request_metadata,
+                cause=exc,
+            )
+            self.last_completion_metadata = error.to_metadata()
+            raise error from exc
+
+        if data.get("error"):
+            error = _provider_failure(
+                "openai",
+                self.model,
+                self.base_url,
+                "provider_error",
+                f"Chat Completions error: {data['error']}",
+                request_metadata,
+            )
+            self.last_completion_metadata = error.to_metadata()
+            raise error
+
+        # 复用 Responses API 相同的 usage 提取逻辑（字段名兼容）
+        self.last_completion_metadata = {
+            **request_metadata,
+            **_extract_usage_cache_details(data),
+        }
+        text = _extract_openai_text(data)
+        if text:
+            return text
+        error = _provider_failure(
+            "openai",
+            self.model,
+            self.base_url,
+            "empty_response",
+            "Chat Completions error: could not extract text from response",
+            request_metadata,
+        )
+        self.last_completion_metadata = error.to_metadata()
+        raise error
+
+
 def _extract_anthropic_text(data):
     for item in data.get("content", []):
         if isinstance(item, dict) and item.get("type") == "text":

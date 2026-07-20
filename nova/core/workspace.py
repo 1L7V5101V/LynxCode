@@ -62,6 +62,7 @@ class WorkspaceContext:
                     cwd=cwd,
                     capture_output=True,
                     text=True,
+                    errors="replace",
                     check=True,
                     timeout=5,
                 )

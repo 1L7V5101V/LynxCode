@@ -11,11 +11,38 @@ from textual.widgets import Collapsible, Input, Markdown, Static
 from ..commands.slash import SlashCommand, suggest_commands
 
 
-NOVA_MARK = [
-    r"        /\___/\\",
-    r"       (  o o  )",
-    r"       /   ^   \\",
-    r"      /|       |\\",
+LYNX_MARK = [
+    "",
+    "            ▄▄ ██",
+    "            ▀▀██▄█▀",
+    "                ▀▀█▄                                               ██▀",
+    "                   ██▄▄                                       ▄████▄█▀",
+    "                 █▄ ██████▄                              ▄▄▄▄█▀▀▀▀",
+    "               ▀▄▄██▄ ▀██████▄▄▄▄▄▄▄▄▄▄▄▄▄▄▄     ▄▄▄▄██████▀▀",
+    "              ▀▀▀▀▄████████████████████████████████████████▀▀ ▄▄▀",
+    "                ▄████████████████████████████████████████▄███▄",
+    "            ▄█████████▀▀▀▀▀▀▀████████████████████████████▀▀▀▀▀",
+    "       ▄██████████████         ▀██████████████▀▀ ▀▀▀▀██████████▄",
+    "    ▄████████████▀▀▀▀ ▀▀▀▀▀▄▄ ████████████▀         ▀████████▄",
+    "     █████████▀   ▀▀███▄     ▀▀▀▀████████████▄▄█▀▀▀▀▀▀ ▄██████████▄▄",
+    "    ███████▀▀▄▄▄▄          ▄     ▀▀█▀▀   ▄       ▄██▄▄ █████████▄",
+    "    ▀ ███▄██▀▀  ▀          ▀▀▀▀▀▀ █▄▄▄▄▀▀               ▄█████▀▀▀▀",
+    "        ████▄   ▀██▄                              █  █▄▄ █████▀",
+    "          ▀█▀█                                ▄▄▄    █████▀▀▀",
+    "                                           ▄▄▄▄█████████",
+    "                                         █████████████████▄",
+    "                                       ▄████████████████████████▄▄▄▄",
+    "                                    ████████████████████████████████▄▄",
+    "               ▀█      ▄          █▄▄████████████████████████████████████▄▄         ███████▄",
+    "                ██▄▄█▄             ██████████████████████████████████████████▄       ▀████████▄▄▄",
+    "                ▀██████▄          ▄████████████████████████████████████████████      ▄███████████",
+    "                 ▀████████▄█▄    █████████████████▀▀████████████████████████████     ████████████",
+    "                  ████████████▄▄████████████████▀   █████████████████████████████   ▄██████████▀",
+    "                  █████████████████████████████▀      ▀███████████████████████████▄████████████▀",
+    "                  ▀▀▀▀▀█████▀▀▀▀▀▀██████████▀▀  ▄▄▄▀▀▀▀▀▀▀▀█████████████████████████████▀▀",
+    "             ▄▀   ▄█   █▀    ▄   ▄▄          █▀ ▄▄  ▄         ▀▀▀████████████████▀▀▀▀▀▀▀▀▀",
+    "              ▀    ▀   ▀    ▀█   ▀█             ▀  ▀▀          ▀▀▀▀▀▀▀▀▀▀",
+    "",
 ]
 
 
@@ -66,12 +93,12 @@ class WelcomeBanner(Static):
         accent = "#9ec5fe"
         rows = [
             Text.assemble(
-                Text("nova", style=f"bold {accent}"),
+                Text("Lynx", style=f"bold {accent}"),
                 Text("  local coding agent", style=muted),
             ),
             Text(""),
         ]
-        rows.extend(Text(line, style=accent) for line in NOVA_MARK)
+        rows.extend(Text(line, style=accent) for line in LYNX_MARK)
         rows.extend(
             [
                 Text(""),
@@ -148,7 +175,7 @@ class AssistantMessage(Static):
         self.content = content
 
     def compose(self):
-        yield Static("nova", classes="message-label")
+        yield Static("Lynx", classes="message-label")
         yield Markdown(self.content)
 
     def update_content(self, content: str) -> None:
@@ -529,7 +556,7 @@ class InputBar(Static):
 
     def __init__(self) -> None:
         super().__init__()
-        self.input = Input(placeholder="Ask nova or type /help")
+        self.input = Input(placeholder="Ask Lynx or type /help")
         self.history: list[str] = []
         self.history_index = 0
         self._slash_suggestions: list[SlashCommand] = []
@@ -545,7 +572,7 @@ class InputBar(Static):
     def set_busy(self, busy: bool) -> None:
         self.input.disabled = bool(busy)
         self.input.placeholder = (
-            "nova is working..." if busy else "Ask nova or type /help"
+            "Lynx is working..." if busy else "Ask Lynx or type /help"
         )
 
     def history_prev(self) -> None:

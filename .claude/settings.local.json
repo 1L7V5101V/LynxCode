@@ -1,0 +1,30 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(awk '{print $2}')",
+      "Bash(git stash *)",
+      "Bash(git count-objects *)",
+      "Bash(git tag *)",
+      "Bash(refs/original/存在则清理 *)",
+      "Bash(git branch *)",
+      "Bash(GIT_SEQUENCE_EDITOR=\"python3 /tmp/gen-rebase-editor.py\" git rebase *)",
+      "Bash(python3 /tmp/gen-rebase-editor.py /tmp/test-todo)",
+      "Bash(mkdir -p .git/rebase-tmp)",
+      "Bash(python3 -c ' *)",
+      "Bash(GIT_SEQUENCE_EDITOR=\"sed -i -f .git/rebase-fixup.sed\" git rebase *)",
+      "Read(//bin/**)",
+      "Bash(/bin/sh -c 'echo \"shell test OK\"')",
+      "Bash(/bin/sh -c 's=\"${HASH: -2}\"; echo \"$s\"')",
+      "Bash(/bin/sh *)",
+      "Bash(git filter-branch *)",
+      "Bash(git update-ref *)",
+      "Bash(git reset *)",
+      "Bash(git --version)",
+      "Bash(awk 'NF')",
+      "Bash(git reflog *)",
+      "Bash(git gc *)",
+      "Bash(python -m nova --help)",
+      "Bash(git push *)"
+    ]
+  }
+}

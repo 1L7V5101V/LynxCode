@@ -1,0 +1,119 @@
+{
+  "verification": [
+    {
+      "question": "What data structure does ContextManager use to encode the preferred reduction order when the assembled prompt exceeds the total budget, and what are the default values in `context_manager.py`?",
+      "answer_key": "ContextManager uses the `reduction_order` tuple attribute, defaulting to `DEFAULT_REDUCTION_ORDER = (\"relevant_memory\", \"skills\", \"history\", \"memory\", \"prefix\")`. During the budget reduction loop in `build()`, it iterates through this ordered tuple and reduces each section's budget one at a time (by the current overflow amount), re-rendering after each reduction, until the prompt fits or no further reduction is possible.",
+      "required_facts": [
+        "reduction_order is a tuple attribute of ContextManager",
+        "default value is DEFAULT_REDUCTION_ORDER = (\"relevant_memory\", \"skills\", \"history\", \"memory\", \"prefix\")",
+        "defined in context_manager.py",
+        "the reduction loop iterates through reduction_order and reduces budgets one section at a time"
+      ],
+      "difficulty": "detail"
+    },
+    {
+      "question": "In `runtime.py:evaluate_resume_state()`, what specific identity keys are compared between the saved checkpoint runtime identity and the current runtime identity to detect workspace mismatches?",
+      "answer_key": "The `evaluate_resume_state()` method (line 321-333 of runtime.py) compares 11 identity keys: `cwd`, `model`, `model_client`, `approval_policy`, `read_only`, `max_steps`, `max_new_tokens`, `feature_flags`, `shell_env_allowlist`, `workspace_fingerprint`, and `tool_signature`. If any of these keys differ between the saved and current identity, the field name is recorded in `mismatch_fields`, and the resume status is set to `workspace-mismatch` (unless stale paths are also detected, in which case `partial-stale` takes priority).",
+      "required_facts": [
+        "the 11 identity keys tuple is defined in evaluate_resume_state() in runtime.py at lines 321-333",
+        "mismatch_fields is populated when saved_identity[key] != current_identity[key]",
+        "stale_paths takes priority over mismatch_fields in status assignment",
+        "CHECKPOINT_WORKSPACE_MISMATCH_STATUS is the resulting status when only identity fields differ"
+      ],
+      "difficulty": "detail"
+    },
+    {
+      "question": "What file-writing strategy does `RunStore._write_json_atomic()` and `SessionStore.save()` use to prevent corruption from partial writes, and how do they differ?",
+      "answer_key": "Both use atomic write patterns. `RunStore._write_json_atomic()` in run_store.py writes to a `tempfile.NamedTemporaryFile` in the same directory with a `.tmp` suffix, then calls `Path(temp_name).replace(path)` to atomically swap. `SessionStore.save()` in session_store.py writes to a similarly-named temp file (including pid and thread id in the name) using `path.write_text()` then `os.replace()`. The key difference is that `SessionStore` uses a `threading.RLock` for thread safety, while `RunStore` does not.",
+      "required_facts": [
+        "RunStore uses tempfile.NamedTemporaryFile with replace",
+        "SessionStore uses path.write_text then os.replace with thread id in tmp filename",
+        "SessionStore uses threading.RLock for mutual exclusion",
+        "RunStore._write_json_atomic uses tempfile while SessionStore.save builds the tmp name manually"
+      ],
+      "difficulty": "detail"
+    },
+    {
+      "question": "How does the `Engine.run_turn()` control loop decide between retrying a model call (continuing the loop) vs. finishing with a model error (yielding a stop event and returning)?",
+      "answer_key": "In `engine.py` (lines 225-268), when `complete_model()` raises an exception, the engine first checks `agent.abort_requested` (abort takes precedence). Then it calls `should_retry_model_error(exc, provider_retries)`, which is defined in `engine_helpers.py` and only returns True if the exception is a `ProviderError` with code `\"empty_response\"` and the retry count for that code is less than 1 (i.e., only one retry allowed). If `should_retry_model_error` returns False, the engine yields from `finish_model_error()` and returns. The key design is that retries are limited and only for specific error codes.",
+      "required_facts": [
+        "should_retry_model_error is defined in engine_helpers.py",
+        "only ProviderError with code 'empty_response' is retryable",
+        "max 1 retry per error code (provider_retries.get(code, 0) < 1)",
+        "if not retryable, finish_model_error() is called and the generator returns"
+      ],
+      "difficulty": "logic"
+    },
+    {
+      "question": "When `CompactManager.compact()` runs, exactly how are history items grouped, which turns get summarized, and what data is extracted into the summary?",
+      "answer_key": "In `compact.py`, `CompactManager._group()` groups history by `turn_id`. `compact()` keeps `keep_recent_turns` (default 2) most recent turn groups intact. Older turn groups' items are summarized: user requests (last one), assistant notes (last one), sorted unique files read and files modified (`write_file`/`patch_file`) are extracted. A `compact_summary` system item is created with this data and prepended to the history, followed by the kept recent turns. The old items are discarded.",
+      "required_facts": [
+        "history items are grouped by turn_id using _group() method",
+        "keep_recent_turns defaults to 2",
+        "files_read and files_modified are extracted from tool items with path args",
+        "the summary is inserted as a 'compact_summary' system-kind item",
+        "located in compact.py"
+      ],
+      "difficulty": "logic"
+    },
+    {
+      "question": "How does the tool execution pipeline in `tool_executor.py` sequence its guardrail checks before actually executing a tool, and what happens at each gate?",
+      "answer_key": "In `tool_executor.run_tool()` (lines 12-128 of tool_executor.py), the pipeline is: (1) existence check — if `name not in agent.tools`, return error immediately; (2) validation — `agent.validate_tool(name, args)` catches invalid arguments; (3) repetition guard — `agent.repeated_tool_call(name, args)` blocks identical repeated calls; (4) permission check — `agent.permission_checker.check(tool, args)` returns a `PermissionDecision`; (5) policy check — `ToolPolicyChecker(agent).check(tool, args)` returns a `ToolPolicyDecision`; (6) execution — capture workspace snapshot, call `tool.execute(args).content`, diff workspace snapshots, update memory, record metadata. At each rejection gate, `agent._last_tool_result_metadata` is populated with `tool_status: \"rejected\"` and an appropriate error code.",
+      "required_facts": [
+        "pipeline order: existence -> validation -> repetition -> permission -> policy -> execution",
+        "validate_tool is called via agent.validate_tool() and catches exception",
+        "permission_checker.check returns PermissionDecision with allowed bool",
+        "ToolPolicyChecker.check returns ToolPolicyDecision with allowed bool",
+        "before execution, capture_workspace_snapshot() is called for risky tools",
+        "_last_tool_result_metadata is set at each rejection gate"
+      ],
+      "difficulty": "logic"
+    },
+    {
+      "question": "How does the Engine obtain events from worker subagents during the turn loop, and how are these events integrated with the user-facing event stream?",
+      "answer_key": "In `engine.py`, `run_turn()` calls `_drain_worker_notification_events()` (lines 52-58) at the start of each loop iteration and again after model parsing. This calls `drain_worker_notifications()` which gets notifications from `agent.worker_manager.drain_notifications()` (a `queue.Queue` in worker_manager.py). Each notification is recorded as a user message, emitted as a `session_event_bus` event (`worker_notification_drained`), and yielded as a `\"worker_notification\"` type event containing the run_id and content. The content is clipped to 500 characters. The engine also checks `drain_worker_notifications()` after tool execution in `engine_helpers.execute_tool_payload()`.",
+      "required_facts": [
+        "_drain_worker_notification_events() is called at the start of each loop iteration in run_turn()",
+        "WorkerManager uses queue.Queue for notifications",
+        "notifications are recorded as user messages via agent.record()",
+        "worker notification content is clipped to 500 chars via clip(notification, 500)",
+        "yielded events have type 'worker_notification'"
+      ],
+      "difficulty": "integration"
+    },
+    {
+      "question": "How does `Nova._build_prompt_and_metadata()` coordinate with both `ContextManager.build()` and `CompactManager.compact()` when the assembled prompt exceeds the context budget?",
+      "answer_key": "In `runtime.py:_build_prompt_and_metadata()` (lines 601-651), the flow is: first `self.context_manager.build(user_message)` is called, which internally handles section budget reduction (the first layer of defense). If the resulting metadata indicates `prompt_over_budget: True` AND history has more than 4 entries, the runtime calls `self.compact_history(trigger=\"auto_prompt_over_budget\")` which triggers `CompactManager.compact()` to summarize older turns. Then `context_manager.build()` is called a second time with the compacted history. The metadata is marked with `auto_compacted: True` to indicate this remedial step occurred.",
+      "required_facts": [
+        "context_manager.build() is called first and handles section budget reduction internally",
+        "if prompt_over_budget and len(history) > 4, compact_history is called",
+        "compact_history triggers CompactManager.compact()",
+        "context_manager.build() is called a second time after compaction",
+        "the two-layer mechanism: section budget reduction then history compaction"
+      ],
+      "difficulty": "integration"
+    }
+  ],
+  "recommended": [
+    {
+      "question": "How would you use the checkpoint/resume system to detect when a session's model client, approval policy, or tool set has changed between sessions?",
+      "perspective": "usage"
+    },
+    {
+      "question": "If you wanted to add a new prompt section to the ContextManager (e.g., a 'system_directives' section that also participates in budget reduction), what specific data structures and methods in `context_manager.py` would you need to modify?",
+      "perspective": "modification"
+    },
+    {
+      "question": "What is the overall philosophy behind the separation of `Engine` (engine.py) and `Nova`/runtime (runtime.py) in this module, and how does this separation affect the control flow of a single user turn?",
+      "perspective": "understanding"
+    },
+    {
+      "question": "Why does the `ToolPolicyChecker` class in `tool_policy.py` exist as a separate check layer on top of `PermissionChecker` in `permissions.py`? What distinct concerns does each class address, and how would you add a new policy rule?",
+      "perspective": "understanding"
+    },
+    {
+      "question": "How would you configure the runtime to create a child agent (worker) that runs in the background, has read-only access to the workspace, and limits itself to a maximum number of steps? What components are involved in setting this up?",
+      "perspective": "usage"
+    }
+  ]
+}
